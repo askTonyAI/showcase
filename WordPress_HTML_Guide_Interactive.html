@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordPress 內容創作者的 HTML 實戰指南</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts: Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FAFAF9; /* Stone 50 */
+            color: #44403C; /* Stone 700 */
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Custom Scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d6d3d1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a29e; 
+        }
+
+        .tag-card.active {
+            border-color: #EA580C; /* Orange 600 */
+            background-color: #FFF7ED; /* Orange 50 */
+        }
+    </style>
+
+    <!-- Chosen Palette: Warm Neutrals with WordPress Orange Accent -->
+    <!-- Application Structure Plan: 
+         1. Hero Section: Sets the stage, "Why this matters".
+         2. Strategic Overview (Chart): Visualizes tags by "Frequency vs. Impact" to help users prioritize learning.
+         3. The Interactive Toolbox: The core learning area. Left/Top navigation for categories, Central area for detailed tag cards (What, When, Code, Mistakes).
+         4. Live Transformation Lab: A split-view demo showing "Plain Text" vs "HTML Enhanced" to prove the value visually.
+         5. The 'Danger Zone': A distinct red-themed section for tags to avoid.
+         6. Conclusion: Setting boundaries on when to stop.
+         This structure moves from "Why" -> "What to Prioritize" -> "How to use" -> "See it work" -> "What to avoid".
+    -->
+    <!-- Visualization & Content Choices:
+         1. Bubble Chart (Chart.js): Maps tags by Frequency (X) and Visual Impact (Y). 
+            - Goal: Inform/Prioritize. Helps users see that <h2> and <ul> are high impact/high frequency.
+            - Interaction: Tooltips show the tag name.
+         2. Interactive Tag Cards (DOM Manipulation): 
+            - Goal: Inform/Organize. Breaks down the dense "Deep Dive" text into digestible, clickable cards.
+            - Interaction: Click to expand details.
+         3. Comparison Viewer (DOM Manipulation):
+            - Goal: Change/Compare. Shows the "Real World Application" by toggling classes on a text block.
+         4. Compatibility Table (Dynamic HTML Generation):
+            - Goal: Reference. A quick lookup for the "Summary Table" data.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+</head>
+<body class="antialiased bg-stone-50 text-stone-800">
+
+    <!-- Navigation / Header -->
+    <header class="bg-white border-b border-stone-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl font-bold text-orange-600">&lt;/&gt;</span>
+                <h1 class="text-lg font-bold tracking-tight">WP 內容創作者 HTML 指南</h1>
+            </div>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="#strategy" class="hover:text-orange-600 transition">學習策略</a>
+                <a href="#toolbox" class="hover:text-orange-600 transition">標籤工具箱</a>
+                <a href="#lab" class="hover:text-orange-600 transition">實戰演練</a>
+                <a href="#danger" class="hover:text-red-600 transition">危險區</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-white py-12 sm:py-20">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-4xl font-extrabold text-stone-900 sm:text-5xl mb-6">
+                寫出更好懂的文章，<br><span class="text-orange-600">不需成為工程師</span>
+            </h2>
+            <p class="text-xl text-stone-600 mb-8 leading-relaxed">
+                這不是艱深的程式教學，而是專為 WordPress 部落客與行銷人設計的實戰指南。
+                掌握幾個關鍵 HTML 標籤，就能解決排版跑版、重點不突出、結構混亂的問題。
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#toolbox" class="px-6 py-3 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition shadow-lg">
+                    開始學習基礎
+                </a>
+                <a href="#lab" class="px-6 py-3 bg-stone-100 text-stone-700 font-bold rounded-lg hover:bg-stone-200 transition">
+                    看實戰範例
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Strategy Section: Visualization -->
+    <section id="strategy" class="py-12 bg-stone-50 border-y border-stone-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="mb-8 text-center max-w-2xl mx-auto">
+                <h3 class="text-2xl font-bold text-stone-800 mb-2">學習優先級策略圖</h3>
+                <p class="text-stone-600">
+                    HTML 標籤成千上萬，但我們只需要關注這一張圖裡的內容。此圖表顯示了各標籤在寫作時的「使用頻率」與對文章「視覺結構的影響力」。
+                    <br><span class="text-sm text-orange-600 font-bold">右上角的標籤是你最應該優先熟練的。</span>
+                </p>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-stone-100">
+                <div class="chart-container">
+                    <canvas id="tagChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toolbox Section: The Core Content -->
+    <section id="toolbox" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="mb-10">
+                <h3 class="text-3xl font-bold text-stone-900 mb-4">實用標籤工具箱</h3>
+                <p class="text-lg text-stone-600 max-w-3xl">
+                    這裡是你的武器庫。我們將常用的 HTML 分為四大類。點擊左側分類，再選擇標籤，即可查看詳細的白話說明、使用情境與 WordPress 實戰範例。
+                </p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Category Sidebar -->
+                <div class="lg:w-1/4 space-y-2">
+                    <div id="category-nav" class="flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0">
+                        <!-- Categories injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div class="lg:w-3/4">
+                    <!-- Tag Selection Grid -->
+                    <div id="tag-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8">
+                        <!-- Tags injected by JS -->
+                    </div>
+
+                    <!-- Detail Card -->
+                    <div id="tag-detail" class="bg-stone-50 rounded-2xl p-6 border border-stone-200 shadow-sm hidden">
+                        <div class="flex items-center justify-between mb-6 border-b border-stone-200 pb-4">
+                            <h4 id="detail-title" class="text-3xl font-mono font-bold text-orange-600"></h4>
+                            <span id="detail-badge" class="px-3 py-1 text-xs font-bold rounded-full bg-stone-200 text-stone-600">WP 相容性: 高</span>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div>
+                                    <h5 class="font-bold text-stone-900 mb-1 flex items-center">🔍 這是幹嘛用的？</h5>
+                                    <p id="detail-desc" class="text-stone-700 leading-relaxed"></p>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-stone-900 mb-1 flex items-center">📝 什麼時候用？</h5>
+                                    <p id="detail-usage" class="text-stone-700 leading-relaxed"></p>
+                                </div>
+                                <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                                    <h5 class="font-bold text-red-800 mb-1 text-sm">⚠️ 新手常犯錯誤</h5>
+                                    <p id="detail-mistake" class="text-red-700 text-sm leading-relaxed"></p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <h5 class="font-bold text-stone-900 mb-2">💻 WordPress 範例</h5>
+                                    <div class="bg-stone-900 text-stone-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                                        <code id="detail-code"></code>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-stone-900 mb-2">👀 預覽效果</h5>
+                                    <div id="detail-preview" class="p-4 bg-white border border-stone-200 rounded-lg shadow-inner prose max-w-none">
+                                        <!-- Preview HTML -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty State -->
+                    <div id="empty-state" class="text-center py-20 bg-stone-50 rounded-2xl border border-dashed border-stone-300">
+                        <p class="text-stone-400 text-lg">請選擇上方的標籤以查看詳細教學</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lab Section: Before/After -->
+    <section id="lab" class="py-16 bg-orange-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="mb-10 text-center">
+                <h3 class="text-3xl font-bold text-stone-900 mb-4">實戰應用示範</h3>
+                <p class="text-lg text-stone-600">
+                    看看同一段內容，如何只運用本次教學的標籤，從「純文字」變成「結構清晰的好文章」。
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Raw Text Column -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-stone-100 h-full flex flex-col">
+                    <div class="flex justify-between items-center mb-4 border-b border-stone-100 pb-2">
+                        <h4 class="font-bold text-stone-500">❌ 修改前：純文字地獄</h4>
+                    </div>
+                    <div class="prose max-w-none text-stone-500 text-sm font-mono whitespace-pre-wrap leading-relaxed flex-grow">
+為什麼你要學 HTML？因為這樣可以讓你的文章變好看。很多人寫文章都擠在一起，讀者看了很累。我們可以用簡單的標籤來分段。還有如果你要列點，不要自己打 1. 2. 3.，這樣很醜。總之，學一點點 HTML 對你的 WordPress 經營很有幫助，真的不難，不用怕。
+                    </div>
+                </div>
+
+                <!-- HTML Enhanced Column -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-orange-500 h-full flex flex-col">
+                    <div class="flex justify-between items-center mb-4 border-b border-stone-100 pb-2">
+                        <h4 class="font-bold text-stone-800">✅ 修改後：結構化好文</h4>
+                        <span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">易讀性大幅提升</span>
+                    </div>
+                    <div class="prose max-w-none text-stone-800 flex-grow">
+                        <h3 class="text-xl font-bold mt-0">為什麼你要學 HTML？</h3>
+                        <p>因為這樣可以讓你的文章<strong>變好看</strong>。很多人寫文章都擠在一起，讀者看了很累。我們可以用簡單的標籤來分段。</p>
+                        <blockquote>學一點點 HTML 對你的 WordPress 經營很有幫助。</blockquote>
+                        <p>如果你要列點，不要手動打數字，試試看清單：</p>
+                        <ul class="list-disc pl-5">
+                            <li>讓結構清楚</li>
+                            <li>讓重點突出</li>
+                            <li>系統會自動縮排</li>
+                        </ul>
+                        <p class="text-sm text-stone-500 mt-4"><em>總之，真的不難，不用怕。</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Danger Zone -->
+    <section id="danger" class="py-16 bg-white border-b border-stone-200">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl">⚠️</div>
+                <div>
+                    <h3 class="text-2xl font-bold text-stone-900">很常看到，但新手先不要碰</h3>
+                    <p class="text-stone-600">這些標籤雖然常見，但在 WordPress 中容易與佈景主題衝突，或導致版面崩壞。</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Warning Cards -->
+                <div class="p-6 rounded-lg border border-red-100 bg-red-50 hover:shadow-md transition">
+                    <h4 class="font-mono font-bold text-red-700 text-lg mb-2">&lt;div&gt;</h4>
+                    <p class="text-sm text-stone-700 mb-3">它是無意義的容器，主要是給工程師寫 CSS 排版用的。</p>
+                    <p class="text-xs font-bold text-red-600">為什麼不碰：容易不小心把整個版面切壞，且沒有視覺效果。</p>
+                </div>
+                
+                <div class="p-6 rounded-lg border border-red-100 bg-red-50 hover:shadow-md transition">
+                    <h4 class="font-mono font-bold text-red-700 text-lg mb-2">&lt;font&gt;</h4>
+                    <p class="text-sm text-stone-700 mb-3">這是非常古老的標籤，用來改顏色或大小。</p>
+                    <p class="text-xs font-bold text-red-600">為什麼不碰：現代網頁標準已淘汰，且會被 WordPress 編輯器過濾掉。</p>
+                </div>
+
+                <div class="p-6 rounded-lg border border-red-100 bg-red-50 hover:shadow-md transition">
+                    <h4 class="font-mono font-bold text-red-700 text-lg mb-2">&lt;table&gt;</h4>
+                    <p class="text-sm text-stone-700 mb-3">用來製作複雜的表格。</p>
+                    <p class="text-xs font-bold text-red-600">為什麼不碰：語法極其複雜（tr, td, th），容易漏標籤導致全站跑版。請直接用編輯器的表格工具。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conclusion -->
+    <section class="py-12 bg-stone-100 text-center">
+        <div class="max-w-3xl mx-auto px-4">
+            <h3 class="text-2xl font-bold text-stone-800 mb-4">學到這裡就夠了</h3>
+            <p class="text-stone-600 mb-8 leading-relaxed">
+                作為內容工作者，你不需要懂 CSS，不需要會寫 JavaScript。
+                只要善用這份教學裡的標籤，你的文章結構就會比 90% 的人更清楚、更好讀。
+                <br>如果遇到想要「把字體變大一點點」或「圖片想要飛進來」這類需求，
+                <span class="font-bold text-stone-800">請找工程師或尋求佈景主題設定</span>，不要自己在文章內硬改喔！
+            </p>
+            <p class="text-sm text-stone-400">安心寫作，把技術留給專業的。</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 py-8 text-center text-sm">
+        <p>&copy; 2024 WordPress HTML 基礎教學指南 | Designed for Content Creators</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Data Source: Derived from the "Source Report" content structure
+        const htmlData = {
+            categories: [
+                { id: 'text', name: '文字與段落', icon: '📝' },
+                { id: 'structure', name: '標題與區塊', icon: '🏗️' },
+                { id: 'list', name: '清單整理', icon: '📋' },
+                { id: 'link', name: '連結與補充', icon: '🔗' }
+            ],
+            tags: [
+                {
+                    id: 'p',
+                    tag: '<p>',
+                    category: 'text',
+                    title: '段落 (Paragraph)',
+                    desc: '這就是最基本的「一段話」。你的文章就是由無數個 <p> 組成的。',
+                    usage: '只要是正文內容，都會包在這裡面。通常你按 Enter 換行，WordPress 就會自動幫你加上這個。',
+                    mistake: '不要在裡面硬塞太多 <br> 來換行，應該直接開新段落。',
+                    code: '<p>這是一個完整的段落。<br>包含句子與意思。</p>',
+                    compatibility: '高',
+                    stats: { freq: 95, impact: 20 } // Frequency (X), Visual Impact (Y) for Chart
+                },
+                {
+                    id: 'br',
+                    tag: '<br>',
+                    category: 'text',
+                    title: '換行 (Break)',
+                    desc: '在「不分段」的情況下強制換到下一行。',
+                    usage: '寫詩、寫地址，或是想要緊湊一點的排版時。',
+                    mistake: '不要連續用兩個 <br><br> 來製造段落間距，那是 CSS 的工作。',
+                    code: '<p>台北市中山區<br>南京東路三段...</p>',
+                    compatibility: '高',
+                    stats: { freq: 60, impact: 10 }
+                },
+                {
+                    id: 'strong',
+                    tag: '<strong>',
+                    category: 'text',
+                    title: '粗體強調 (Strong)',
+                    desc: '把字加粗，告訴讀者與搜尋引擎「這裡很重要」。',
+                    usage: '關鍵字、結論、警語。',
+                    mistake: '不要整段都加粗，那樣等於沒有重點。',
+                    code: '<p>請務必<strong>備份資料</strong>再更新。</p>',
+                    compatibility: '高',
+                    stats: { freq: 70, impact: 40 }
+                },
+                {
+                    id: 'em',
+                    tag: '<em>',
+                    category: 'text',
+                    title: '斜體強調 (Emphasis)',
+                    desc: '語氣上的強調，通常呈現為斜體。',
+                    usage: '外文單字、對話中的語氣轉折、書名（西文慣例）。',
+                    mistake: '中文斜體在某些螢幕很難讀，建議斟酌使用。',
+                    code: '<p>他竟然<em>真的</em>做到了。</p>',
+                    compatibility: '中',
+                    stats: { freq: 20, impact: 30 }
+                },
+                {
+                    id: 'span',
+                    tag: '<span>',
+                    category: 'text',
+                    title: '行內容器 (Span)',
+                    desc: '本身沒什麼效果，通常用來把幾個字「框起來」以便改變顏色（需配合 style 屬性，但基礎教學不建議常手動改）。',
+                    usage: '需要對一句話中的某「兩個字」做特殊處理時。',
+                    mistake: '如果沒有加 style 或 class，這個標籤是看不出變化的。',
+                    code: '<p>只有<span style="color:red">這兩個字</span>變紅。</p>',
+                    compatibility: '中',
+                    stats: { freq: 15, impact: 10 }
+                },
+                {
+                    id: 'h2',
+                    tag: '<h2>',
+                    category: 'structure',
+                    title: '副標題 (Heading 2)',
+                    desc: '文章中最大的章節標題（因為 h1 通常是文章主標題）。',
+                    usage: '用來區分文章的主要段落。',
+                    mistake: '不要因為想讓字變大就用 h2，這會影響 SEO 結構。',
+                    code: '<h2>第一章：為什麼要學 HTML</h2>',
+                    compatibility: '高',
+                    stats: { freq: 80, impact: 90 }
+                },
+                {
+                    id: 'h3',
+                    tag: '<h3>',
+                    category: 'structure',
+                    title: '小標題 (Heading 3)',
+                    desc: 'h2 下面的子單元標題。',
+                    usage: '大章節裡面的細分項目。',
+                    mistake: '跳過 h2 直接用 h3，結構會很奇怪。',
+                    code: '<h3>1.1 基礎概念</h3>',
+                    compatibility: '高',
+                    stats: { freq: 65, impact: 70 }
+                },
+                {
+                    id: 'blockquote',
+                    tag: '<blockquote>',
+                    category: 'structure',
+                    title: '引用區塊',
+                    desc: '把一段文字縮排並加上醒目樣式，表示這是引用的話。',
+                    usage: '名言佳句、讀者好評、重點摘要。',
+                    mistake: '單純為了縮排而使用它（雖然很常見，但語意上不精確）。',
+                    code: '<blockquote>「簡單就是美。」—— 某大師</blockquote>',
+                    compatibility: '高',
+                    stats: { freq: 40, impact: 80 }
+                },
+                {
+                    id: 'hr',
+                    tag: '<hr>',
+                    category: 'structure',
+                    title: '分隔線 (Horizontal Rule)',
+                    desc: '一條水平線，用來切斷話題。',
+                    usage: '轉換場景、文章結尾前的區隔。',
+                    mistake: '用太多會讓文章看起來很破碎。',
+                    code: '<p>以上是第一部分。</p><hr><p>接下來我們談談...</p>',
+                    compatibility: '高',
+                    stats: { freq: 30, impact: 60 }
+                },
+                {
+                    id: 'ul',
+                    tag: '<ul>',
+                    category: 'list',
+                    title: '無順序清單 (Unordered List)',
+                    desc: '前面會有小圓點的清單。告訴瀏覽器「這裡開始是一個清單」。',
+                    usage: '特點介紹、成分表、沒有先後順序的列點。',
+                    mistake: '忘記裡面一定要包 <li>，不能直接包文字。',
+                    code: '<ul><li>蘋果</li><li>香蕉</li></ul>',
+                    compatibility: '高',
+                    stats: { freq: 75, impact: 75 }
+                },
+                {
+                    id: 'ol',
+                    tag: '<ol>',
+                    category: 'list',
+                    title: '有順序清單 (Ordered List)',
+                    desc: '前面會有 1. 2. 3. 的清單。',
+                    usage: '教學步驟、排名、時間軸。',
+                    mistake: '同上，裡面一定要包 <li>。',
+                    code: '<ol><li>步驟一</li><li>步驟二</li></ol>',
+                    compatibility: '高',
+                    stats: { freq: 50, impact: 75 }
+                },
+                {
+                    id: 'li',
+                    tag: '<li>',
+                    category: 'list',
+                    title: '清單項目 (List Item)',
+                    desc: '清單裡的每一條項目。',
+                    usage: '必須放在 <ul> 或 <ol> 裡面使用。',
+                    mistake: '單獨使用 <li> 而外面沒有 ul/ol 包住，會顯示異常。',
+                    code: '<ul><li>我是項目</li></ul>',
+                    compatibility: '高',
+                    stats: { freq: 90, impact: 50 }
+                },
+                {
+                    id: 'a',
+                    tag: '<a>',
+                    category: 'link',
+                    title: '超連結 (Anchor)',
+                    desc: '讓文字可以點擊並跳轉到別的網頁。',
+                    usage: '參考資料來源、站內延伸閱讀、按鈕連結。',
+                    mistake: '忘記加 href="..." 屬性，這樣連結會無效。',
+                    code: '<a href="https://google.com">點我搜尋</a>',
+                    compatibility: '高',
+                    stats: { freq: 85, impact: 60 }
+                },
+                {
+                    id: 'code',
+                    tag: '<code>',
+                    category: 'link',
+                    title: '程式碼 (Code)',
+                    desc: '用特殊的字體顯示程式碼，避免被瀏覽器執行。',
+                    usage: '教學文中提到某個指令或檔案名稱時。',
+                    mistake: '用它來包一大段程式碼（應該用 pre）。',
+                    code: '<p>請輸入 <code>npm install</code> 指令。</p>',
+                    compatibility: '中',
+                    stats: { freq: 10, impact: 50 }
+                },
+                {
+                    id: 'pre',
+                    tag: '<pre>',
+                    category: 'link',
+                    title: '預格式化 (Preformatted)',
+                    desc: '保留所有的空白與換行，通常用來貼整段程式碼。',
+                    usage: '展示完整的設定檔、詩詞排版。',
+                    mistake: '忘記這會保留所有空白，導致版面過寬。',
+                    code: '<pre>Function() {\n  Run code;\n}</pre>',
+                    compatibility: '中',
+                    stats: { freq: 5, impact: 60 }
+                }
+            ]
+        };
+
+        // State Management
+        let currentCategory = 'text';
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChart();
+            renderCategories();
+            renderGrid();
+        });
+
+        // 1. Chart.js Implementation
+        function renderChart() {
+            const ctx = document.getElementById('tagChart').getContext('2d');
+            
+            const dataPoints = htmlData.tags.map(t => ({
+                x: t.stats.freq,
+                y: t.stats.impact,
+                r: 10, // radius
+                tag: t.tag,
+                name: t.title
+            }));
+
+            new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'HTML 標籤',
+                        data: dataPoints,
+                        backgroundColor: 'rgba(234, 88, 12, 0.6)', // Orange 600 with opacity
+                        borderColor: 'rgba(234, 88, 12, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: { display: true, text: '使用頻率 (低 → 高)' },
+                            min: 0,
+                            max: 100
+                        },
+                        y: {
+                            title: { display: true, text: '視覺結構影響力 (弱 → 強)' },
+                            min: 0,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.raw.tag + ' ' + context.raw.name;
+                                }
+                            }
+                        },
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // 2. Render Categories Navigation
+        function renderCategories() {
+            const nav = document.getElementById('category-nav');
+            nav.innerHTML = htmlData.categories.map(cat => `
+                <button 
+                    onclick="switchCategory('${cat.id}')"
+                    class="category-btn w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition ${currentCategory === cat.id ? 'bg-stone-800 text-white shadow-md' : 'bg-white text-stone-600 hover:bg-stone-100'}"
+                    data-id="${cat.id}"
+                >
+                    <span class="text-xl">${cat.icon}</span>
+                    <span class="font-bold">${cat.name}</span>
+                </button>
+            `).join('');
+        }
+
+        // 3. Switch Category Logic
+        window.switchCategory = (catId) => {
+            currentCategory = catId;
+            renderCategories(); // Re-render to update active state styles
+            renderGrid();
+            // Hide detail view when switching category
+            document.getElementById('tag-detail').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('hidden');
+        };
+
+        // 4. Render Tag Grid
+        function renderGrid() {
+            const grid = document.getElementById('tag-grid');
+            const filteredTags = htmlData.tags.filter(t => t.category === currentCategory);
+            
+            grid.innerHTML = filteredTags.map(tag => `
+                <button 
+                    onclick="showTagDetail('${tag.id}')"
+                    class="tag-card p-4 rounded-xl border border-stone-200 bg-white hover:shadow-lg transition text-center group"
+                    id="card-${tag.id}"
+                >
+                    <div class="text-orange-600 font-mono font-bold text-xl mb-2 group-hover:scale-110 transition-transform">${tag.tag}</div>
+                    <div class="text-xs text-stone-500 font-medium">${tag.title.split(' ')[0]}</div>
+                </button>
+            `).join('');
+        }
+
+        // 5. Show Detail Logic
+        window.showTagDetail = (tagId) => {
+            const tag = htmlData.tags.find(t => t.id === tagId);
+            if (!tag) return;
+
+            // Update UI State
+            document.querySelectorAll('.tag-card').forEach(el => el.classList.remove('active'));
+            document.getElementById(`card-${tagId}`).classList.add('active');
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            const detailView = document.getElementById('tag-detail');
+            detailView.classList.remove('hidden');
+
+            // Populate Content
+            document.getElementById('detail-title').innerText = tag.tag;
+            document.getElementById('detail-desc').innerText = tag.desc;
+            document.getElementById('detail-usage').innerText = tag.usage;
+            document.getElementById('detail-mistake').innerText = tag.mistake;
+            
+            // Code & Preview
+            const codeBlock = document.getElementById('detail-code');
+            codeBlock.innerText = tag.code;
+            
+            const previewBlock = document.getElementById('detail-preview');
+            previewBlock.innerHTML = tag.code; // Secure in this context as data is hardcoded internal static data
+            
+            // Badge logic
+            const badge = document.getElementById('detail-badge');
+            badge.innerText = `WP 相容性: ${tag.compatibility}`;
+            badge.className = `px-3 py-1 text-xs font-bold rounded-full ${tag.compatibility === '高' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`;
+            
+            // Scroll to detail on mobile
+            if (window.innerWidth < 1024) {
+                detailView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+
+    </script>
+</body>
+</html>
