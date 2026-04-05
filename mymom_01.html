@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台灣高齡白內障手術決策指南</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background-color: #F8FAFC; color: #1E293B; }
+.chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 350px; }
+@media (min-width: 768px) { .chart-container { height: 350px; } }
+.decision-card { transition: transform 0.2s; }
+.decision-card:hover { transform: translateY(-5px); }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="bg-[#1E3A8A] text-white py-12 px-6 shadow-md">
+<div class="max-w-5xl mx-auto">
+<h1 class="text-3xl md:text-5xl font-bold mb-4">👴👵 台灣高齡白內障手術決策指南</h1>
+<p class="text-xl text-blue-200">專為無醫療背景家屬設計的「健保 vs 自費」快速評估工具</p>
+</div>
+</header>
+
+<main class="max-w-5xl mx-auto px-6 py-10 space-y-12">
+
+<section class="bg-[#FFF7ED] border-l-8 border-[#F97316] p-6 md:p-8 rounded-r-xl shadow-sm">
+<h2 class="text-2xl font-bold text-[#C2410C] mb-2">🎯 一句話結論</h2>
+<p class="text-lg md:text-xl text-gray-800 leading-relaxed">
+建議優先評估長輩的<strong>「生活單純度」與「眼底健康狀況」</strong>。若長輩平時只看電視、散步，且不排斥看報紙時戴老花眼鏡，選擇<strong>「健保單焦點水晶體」</strong>性價比最高、風險最低；若極度不想戴眼鏡且預算充足，經醫師確認視網膜健康後，再考慮<strong>「自費多焦點」</strong>。
+</p>
+</section>
+
+<section>
+<h2 class="text-2xl md:text-3xl font-bold text-[#1E3A8A] border-b-2 border-blue-200 pb-2 mb-6">📊 健保 vs 自費：核心差異比較</h2>
+<div class="bg-white rounded-xl shadow-md overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#E0F2FE] text-[#0369A1]">
+<th class="p-4 font-semibold border-b border-blue-100">比較項目</th>
+<th class="p-4 font-semibold border-b border-blue-100">健保手術 (單焦點)</th>
+<th class="p-4 font-semibold border-b border-blue-100">自費手術 (多焦點/散光)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="p-4 border-b border-slate-100 font-medium">💰 費用區間</td>
+<td class="p-4 border-b border-slate-100 text-green-700 font-bold">約 3,000 ~ 5,000 元</td>
+<td class="p-4 border-b border-slate-100 text-orange-600 font-bold">約 3萬 ~ 12萬以上 / 單眼</td>
+</tr>
+<tr class="bg-slate-50 hover:bg-slate-100 transition-colors">
+<td class="p-4 border-b border-slate-100 font-medium">👁️ 視力效果</td>
+<td class="p-4 border-b border-slate-100">單一距離清晰 (通常設定為看遠)</td>
+<td class="p-4 border-b border-slate-100">遠、中、近皆有一定清晰度</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="p-4 border-b border-slate-100 font-medium">👓 術後依賴眼鏡</td>
+<td class="p-4 border-b border-slate-100 text-red-600">看近物 (手機/報紙) 需戴老花眼鏡</td>
+<td class="p-4 border-b border-slate-100 text-green-600">大幅降低戴眼鏡的機率</td>
+</tr>
+<tr class="bg-slate-50 hover:bg-slate-100 transition-colors">
+<td class="p-4 border-b border-slate-100 font-medium">🌙 夜間視覺</td>
+<td class="p-4 border-b border-slate-100">正常，較少光暈</td>
+<td class="p-4 border-b border-slate-100">初期可能有夜間眩光、光暈</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="p-4 font-medium">👥 適合族群</td>
+<td class="p-4">生活單純、預算有限、習慣戴眼鏡者</td>
+<td class="p-4">愛好旅遊、常滑手機、追求無鏡片生活者</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-white p-6 rounded-xl shadow-md">
+<h3 class="text-xl font-bold text-center text-[#1E3A8A] mb-4">費用負擔差異 (單眼)</h3>
+<p class="text-sm text-gray-500 text-center mb-4">呈現一般健保與進階自費的平均開銷對比</p>
+<div class="chart-container">
+<canvas id="costChart"></canvas>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl shadow-md">
+<h3 class="text-xl font-bold text-center text-[#1E3A8A] mb-4">術後需戴老花眼鏡機率</h3>
+<p class="text-sm text-gray-500 text-center mb-4">生活便利性的關鍵指標</p>
+<div class="chart-container">
+<canvas id="glassesChart"></canvas>
+</div>
+</div>
+</section>
+
+<section>
+<h2 class="text-2xl md:text-3xl font-bold text-[#1E3A8A] border-b-2 border-blue-200 pb-2 mb-6">⚖️ 優缺點深度分析 (以長輩生活為核心)</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<div class="bg-[#F0FDF4] border border-green-200 p-6 rounded-xl shadow-sm decision-card">
+<div class="flex items-center mb-4">
+<span class="text-3xl mr-3">🟢</span>
+<h3 class="text-2xl font-bold text-green-800">健保手術 (單焦點)</h3>
+</div>
+<div class="space-y-4">
+<div>
+<h4 class="font-bold text-green-700 flex items-center"><span class="mr-2">👍</span>優點：</h4>
+<ul class="list-disc list-inside text-gray-700 mt-2 space-y-1 ml-2">
+<li><strong>大腦無需重新適應：</strong> 視覺感受與年輕時類似，單純且清晰。</li>
+<li><strong>夜間視力佳：</strong> 幾乎不會有夜間看燈光產生光暈的問題，對偶爾晚上出門的長輩更安全。</li>
+<li><strong>經濟無負擔：</strong> 省下的錢可以買很好的太陽眼鏡或用於術後營養補充。</li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-red-600 flex items-center mt-4"><span class="mr-2">👎</span>缺點：</h4>
+<ul class="list-disc list-inside text-gray-700 mt-2 space-y-1 ml-2">
+<li><strong>必須配戴老花眼鏡：</strong> 術後看電視清楚，但要看手機、剪指甲、看藥袋說明時，一定要找老花眼鏡來戴，會有一點生活上的不便。</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="bg-[#FFF1F2] border border-red-200 p-6 rounded-xl shadow-sm decision-card">
+<div class="flex items-center mb-4">
+<span class="text-3xl mr-3">🟡</span>
+<h3 class="text-2xl font-bold text-rose-800">自費手術 (多焦點)</h3>
+</div>
+<div class="space-y-4">
+<div>
+<h4 class="font-bold text-green-700 flex items-center"><span class="mr-2">👍</span>優點：</h4>
+<ul class="list-disc list-inside text-gray-700 mt-2 space-y-1 ml-2">
+<li><strong>擺脫眼鏡束縛：</strong> 大約 80%~90% 的日常活動（看遠、看手機）都可以不用戴眼鏡，極大提升生活便利性。</li>
+<li><strong>適合活躍生活：</strong> 如果長輩喜歡打高爾夫、旅遊、頻繁傳 LINE，多焦點能提供無縫的視覺體驗。</li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-red-600 flex items-center mt-4"><span class="mr-2">👎</span>缺點：</h4>
+<ul class="list-disc list-inside text-gray-700 mt-2 space-y-1 ml-2">
+<li><strong>需大腦適應期：</strong> 剛開完刀可能會覺得焦距切換怪怪的，長輩需要幾個月的時間適應。</li>
+<li><strong>夜間眩光風險：</strong> 晚上看車燈或路燈可能會有一圈光暈。</li>
+<li><strong>挑選眼球條件：</strong> 如果長輩有青光眼、黃斑部病變，裝了多焦點反而效果很差。</li>
+</ul>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<section class="bg-blue-50 p-8 rounded-xl border border-blue-100 shadow-sm">
+<h2 class="text-2xl md:text-3xl font-bold text-[#1E3A8A] mb-6 text-center">🧭 關鍵決策判斷 (請依長輩狀況打勾)</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-blue-400">
+<h3 class="text-xl font-bold text-blue-800 mb-4 text-center">✅ 什麼情況強烈建議選「健保」？</h3>
+<ul class="space-y-3 text-gray-700">
+<li class="flex items-start"><span class="text-blue-500 mr-2">✔️</span> 預算確實有限，不想造成家庭經濟壓力。</li>
+<li class="flex items-start"><span class="text-blue-500 mr-2">✔️</span> 長輩平常早就習慣戴眼鏡，覺得拿上拿下沒關係。</li>
+<li class="flex items-start"><span class="text-blue-500 mr-2">✔️</span> 生活很單純：主要就是看電視、去公園散步、跟鄰居聊天。</li>
+<li class="flex items-start"><span class="text-blue-500 mr-2">✔️</span> 醫師檢查出眼睛有其他老化疾病（如黃斑部病變、視神經受損）。</li>
+<li class="flex items-start"><span class="text-blue-500 mr-2">✔️</span> 長輩個性容易緊張，對視覺改變的適應力較弱。</li>
+</ul>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-orange-400">
+<h3 class="text-xl font-bold text-orange-800 mb-4 text-center">✅ 什麼情況可以考慮升級「自費」？</h3>
+<ul class="space-y-3 text-gray-700">
+<li class="flex items-start"><span class="text-orange-500 mr-2">✔️</span> 預算充足，花費 10 萬元以上完全不會心痛。</li>
+<li class="flex items-start"><span class="text-orange-500 mr-2">✔️</span> 長輩極度討厭戴眼鏡，覺得找老花眼鏡很煩。</li>
+<li class="flex items-start"><span class="text-orange-500 mr-2">✔️</span> 每天大量使用手機看股票、回 LINE，又喜歡出門旅遊看風景。</li>
+<li class="flex items-start"><span class="text-orange-500 mr-2">✔️</span> 醫師詳細檢查後，確認視網膜與黃斑部非常健康。</li>
+<li class="flex items-start"><span class="text-orange-500 mr-2">✔️</span> 長輩本身有嚴重散光，想趁手術一次解決（可選自費散光單焦點）。</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<h2 class="text-2xl md:text-3xl font-bold text-[#1E3A8A] border-b-2 border-blue-200 pb-2 mb-6">💡 給家屬的實際執行建議</h2>
+<div class="bg-white p-6 rounded-xl shadow-md space-y-4">
+<div class="flex items-start">
+<div class="flex-shrink-0 bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 mt-1">1</div>
+<p class="text-lg text-gray-800"><strong>陪同就醫並直接詢問醫師：</strong> 不要自己猜測，直接問醫師：「我媽媽的眼底（黃斑部）健康狀況，裝自費多焦點能發揮 100% 的效果嗎？」如果醫師猶豫，請果斷選擇健保。</p>
+</div>
+<div class="flex items-start">
+<div class="flex-shrink-0 bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 mt-1">2</div>
+<p class="text-lg text-gray-800"><strong>尊重長輩的價值觀：</strong> 很多長輩聽到要花十幾萬會非常有壓力，反而影響術後心情。如果長輩覺得「能看見就好」，健保單焦點已經能讓視力大幅改善，這就是最好的選擇。</p>
+</div>
+<div class="flex items-start">
+<div class="flex-shrink-0 bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 mt-1">3</div>
+<p class="text-lg text-gray-800"><strong>預算重分配：</strong> 如果決定省下自費水晶體的錢，可以拿這筆預算幫長輩配一副極輕巧的高級老花眼鏡、買防紫外線的包覆式太陽眼鏡，以及安排術後舒適的計程車接送回診。</p>
+</div>
+<div class="flex items-start">
+<div class="flex-shrink-0 bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 mt-1">4</div>
+<p class="text-lg text-gray-800"><strong>分開眼睛評估：</strong> 白內障通常是一眼一眼開。可以先開比較嚴重的那眼（選擇健保或自費），觀察長輩術後的適應狀況與真實滿意度，再決定第二眼要用哪一種。</p>
+</div>
+</div>
+</section>
+
+<section class="bg-slate-800 text-white p-8 rounded-xl shadow-lg mt-8 mb-12">
+<h2 class="text-2xl font-bold flex items-center mb-4"><span class="text-3xl mr-2">⚠️</span> 風險與補充提醒</h2>
+<ul class="list-disc list-inside space-y-2 text-slate-200">
+<li><strong>沒有「完美」的水晶體：</strong> 越貴不代表越好，最貴的多焦點水晶體如果裝在病變的眼睛上，視力可能比便宜的健保單焦點還差。</li>
+<li><strong>術後照護大於一切：</strong> 無論選哪一種，術後一個月內「絕對不可揉眼睛」、「按時點眼藥水」、「洗頭防進水」才是決定手術是否成功的關鍵。</li>
+<li><strong>散光問題：</strong> 即使選單焦點，如果長輩天生散光很重（超過150度），可以考慮「自費散光單焦點（約3-4萬）」，這樣看電視才會清楚，近看一樣戴老花眼鏡。</li>
+</ul>
+</section>
+
+</main>
+
+<footer class="bg-slate-200 text-center py-6 text-slate-500 text-sm">
+<p>本指南僅供家屬決策參考與溝通使用，不代表醫療診斷。<br>實際手術方案請務必與主治眼科醫師進行最終確認。</p>
+</footer>
+
+<script>
+const costCtx = document.getElementById('costChart').getContext('2d');
+new Chart(costCtx, {
+type: 'bar',
+data: {
+labels: ['健保單焦點', '自費多焦點/散光'],
+datasets: [{
+label: '平均花費估算 (新台幣/元)',
+data: [4000, 75000],
+backgroundColor: ['#3B82F6', '#F97316'],
+borderRadius: 6,
+borderWidth: 0
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { display: false },
+tooltip: {
+callbacks: {
+title: function(tooltipItems) {
+const item = tooltipItems[0];
+let label = item.chart.data.labels[item.dataIndex];
+if (Array.isArray(label)) return label.join(' ');
+return label;
+},
+label: function(context) {
+return '約 ' + context.parsed.y.toLocaleString() + ' 元';
+}
+}
+}
+},
+scales: {
+y: { beginAtZero: true, grid: { color: '#E2E8F0' } },
+x: { grid: { display: false } }
+}
+}
+});
+
+const glassesCtx = document.getElementById('glassesChart').getContext('2d');
+new Chart(glassesCtx, {
+type: 'doughnut',
+data: {
+labels: ['需配戴老花眼鏡機率', '不需配戴眼鏡機率'],
+datasets: [
+{
+data: [90, 10],
+backgroundColor: ['#94A3B8', '#3B82F6'],
+borderWidth: 2,
+borderColor: '#ffffff'
+},
+{
+data: [20, 80],
+backgroundColor: ['#94A3B8', '#F97316'],
+borderWidth: 2,
+borderColor: '#ffffff'
+}
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+cutout: '60%',
+plugins: {
+legend: { position: 'bottom' },
+tooltip: {
+callbacks: {
+title: function(tooltipItems) {
+const item = tooltipItems[0];
+let label = item.chart.data.labels[item.dataIndex];
+if (Array.isArray(label)) return label.join(' ');
+return label;
+},
+label: function(context) {
+let type = context.datasetIndex === 0 ? "(健保)" : "(自費)";
+return type + ' ' + context.parsed + '%';
+}
+}
+}
+}
+}
+});
+</script>
+</body>
+</html>
